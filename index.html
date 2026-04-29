@@ -48,6 +48,9 @@
         min-height: 50px;
         font-size: 22px;
         word-wrap: break-word;
+
+        white-space: pre-line;          /* SHOW line breaks */
+        font-family: Arial, sans-serif; /* FORCE normal font */
     }
 
     .small {
@@ -62,11 +65,7 @@
 
 <h1>Number → Braille Converter</h1>
 
-<textarea id="inputNumbers" placeholder="Enter numbers (e.g. 123 456 or 789, 101)"></textarea>
-<br>
-
-<input type="file" id="fileInput">
-
+<textarea id="inputNumbers" placeholder="Paste numbers here (Excel column or spaced numbers)"></textarea>
 <br>
 
 <button onclick="convert()">Convert</button>
@@ -75,7 +74,7 @@
 <div id="output"></div>
 
 <div class="small">
-Uses ⠼ + a–j mapping (1–0)
+Outputs # + a–j mapping (ready for Excel paste)
 </div>
 
 <script>
@@ -83,38 +82,36 @@ function convert() {
     const input = document.getElementById("inputNumbers").value;
 
     const map = {
-        "1": "a",
-        "2": "b",
-        "3": "c",
-        "4": "d",
-        "5": "e",
-        "6": "f",
-        "7": "g",
-        "8": "h",
-        "9": "i",
-        "0": "j"
+        "1": "a","2": "b","3": "c","4": "d","5": "e",
+        "6": "f","7": "g","8": "h","9": "i","0": "j"
     };
 
     let resultLines = [];
 
-    // Split by line (important for Excel)
+    // Split by lines (Excel paste)
     const lines = input.split(/\n/);
 
     lines.forEach(line => {
-        let clean = line.trim();
+        // Also split numbers inside a line (if user pasted "17 22 33")
+        let parts = line.trim().split(/\s+/);
 
-        if (clean !== "") {
-            let braille = "#"; // use # instead of ⠼
+        parts.forEach(clean => {
+            if (clean !== "") {
+                let braille = "#";
 
-            for (let digit of clean) {
-                if (map[digit]) {
-                    braille += map[digit];
+                for (let digit of clean) {
+                    if (map[digit]) {
+                        braille += map[digit];
+                    }
                 }
-            }
 
-            resultLines.push(braille);
-        } else {
-            resultLines.push(""); // keep empty rows aligned
+                resultLines.push(braille);
+            }
+        });
+
+        // Keep empty rows aligned
+        if (line.trim() === "") {
+            resultLines.push("");
         }
     });
 
@@ -124,7 +121,7 @@ function convert() {
 function copyResult() {
     const text = document.getElementById("output").innerText;
     navigator.clipboard.writeText(text);
-    alert("Copied! You can now paste into Excel.");
+    alert("Copied! Paste into Excel column.");
 }
 </script>
 
