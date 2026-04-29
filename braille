@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Number to Braille Converter</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        text-align: center;
+        padding: 40px;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    textarea {
+        width: 80%;
+        height: 120px;
+        font-size: 16px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        background: #007BFF;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #0056b3;
+    }
+
+    #output {
+        margin-top: 25px;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        min-height: 50px;
+        font-size: 22px;
+        word-wrap: break-word;
+    }
+
+    .small {
+        margin-top: 10px;
+        color: #666;
+        font-size: 14px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Number → Braille Converter</h1>
+
+<textarea id="inputNumbers" placeholder="Enter numbers (e.g. 123 456 or 789, 101)"></textarea>
+<br>
+
+<input type="file" id="fileInput">
+
+<br>
+
+<button onclick="convert()">Convert</button>
+<button onclick="copyResult()">Copy Result</button>
+
+<div id="output"></div>
+
+<div class="small">
+Uses ⠼ + a–j mapping (1–0)
+</div>
+
+<script>
+function convert() {
+    const input = document.getElementById("inputNumbers").value;
+
+    const map = {
+        "1": "a",
+        "2": "b",
+        "3": "c",
+        "4": "d",
+        "5": "e",
+        "6": "f",
+        "7": "g",
+        "8": "h",
+        "9": "i",
+        "0": "j"
+    };
+
+    let result = "";
+
+    const numbers = input.split(/[\s,]+/);
+
+    numbers.forEach(num => {
+        if (num.trim() !== "") {
+            let braille = "⠼";
+
+            for (let digit of num) {
+                if (map[digit]) {
+                    braille += map[digit];
+                }
+            }
+
+            result += braille + " ";
+        }
+    });
+
+    document.getElementById("output").innerText = result.trim();
+}
+
+function copyResult() {
+    const text = document.getElementById("output").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
+}
+
+// File upload support
+document.getElementById("fileInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        document.getElementById("inputNumbers").value = event.target.result;
+    };
+
+    reader.readAsText(file);
+});
+</script>
+
+</body>
+</html>
